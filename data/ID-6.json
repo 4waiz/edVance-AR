@@ -1,0 +1,10 @@
+{
+  "id": "ID-6",
+  "title": "Astronaut (Sample GLB)",
+  "description": "Demo model from modelviewer.dev. Replace with your own asset URL.",
+  "type": "gltf",
+  "gltfUrl": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+  "scale": "1 1 1",
+  "position": "0 0 0",
+  "rotation": "0 30 0"
+}

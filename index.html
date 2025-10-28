@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>edVance AR — Scanner</title>
+  <link rel="stylesheet" href="./css/style.css"/>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <script defer src="./js/scanner.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="./assets/logo.png" alt="edVance AR" onerror="this.style.display='none'"/>
+      <span>edVance AR</span>
+    </div>
+    <div class="actions">
+      <button id="admin-btn" class="secondary">Admin</button>
+      <button id="start-btn" class="primary">Start Camera</button>
+    </div>
+  </header>
+
+  <main class="app">
+    <div class="video-wrap">
+      <video id="video" autoplay playsinline></video>
+      <canvas id="frame" class="hidden"></canvas>
+      <div id="model-container" class="overlay"></div>
+      <button id="fs-btn" class="fs-btn" aria-label="Toggle Fullscreen" title="Fullscreen">⛶</button>
+      <div id="loader" class="loader hidden">Loading…</div>
+      <div id="scan-result" class="status hidden"><p></p></div>
+    </div>
+  </main>
+</body>
+</html>

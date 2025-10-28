@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>edVance AR — Create QR</title>
+  <style>
+    body{font:16px system-ui;margin:20px;color:#0b2142}
+    label{display:block;margin:10px 0}
+    input,select,textarea{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid #c8d4ea;min-width:260px}
+    textarea{min-height:70px;width:520px}
+    .row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
+    button{background:#0ea5e9;color:#fff;border:0;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer}
+    #qr{margin-top:16px;border:1px dashed #aac2e5;border-radius:12px}
+    .out a{display:inline-block;margin-right:12px}
+    .tip{opacity:.75}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+</head>
+<body>
+  <h1>Create QR</h1>
+  <p class="tip">IDs ID-1..ID-4 are built-in demos. Use other IDs for your own JSON.</p>
+
+  <form id="f">
+    <div class="row">
+      <label>ID<br><input name="id" required value="ID-6" pattern="ID-[\w-]+"></label>
+      <label>Type<br>
+        <select name="type">
+          <option value="gltf">gltf</option>
+          <option value="image">image</option>
+          <option value="text">text</option>
+          <option value="builtin">builtin</option>
+        </select>
+      </label>
+    </div>
+    <label>Title<br><input name="title" required placeholder="Wind Turbine (Cutaway)"></label>
+    <label>Description<br><textarea name="description" placeholder="Short description shown under the model."></textarea></label>
+    <label>Asset URL (GLB/GLTF or Image)<br><input name="asset" placeholder="https://cdn.example.com/model.glb"></label>
+    <div class="row">
+      <label>Position (A-Frame)<br><input name="position" value="0 0 0"></label>
+      <label>Rotation (A-Frame)<br><input name="rotation" value="0 0 0"></label>
+      <label>Scale (A-Frame)<br><input name="scale" value="1 1 1"></label>
+    </div>
+    <button type="submit">Save & Generate</button>
+  </form>
+
+  <canvas id="qr" width="256" height="256"></canvas>
+  <div class="out">
+    <a id="dlqr" download="qr.png">Download QR</a>
+    <a id="dljson" download="ID-6.json">Download JSON</a>
+  </div>
+
+  <script>
+    function buildRecord(fd){
+      const type = fd.get('type');
+      const rec = {
+        id: fd.get('id'),
+        title: fd.get('title'),
+        description: fd.get('description'),
+        type,
+        position: fd.get('position') || '0 0 0',
+        rotation: fd.get('rotation') || '0 0 0',
+        scale: fd.get('scale') || '1 1 1'
+      };
+      if (type === 'gltf') rec.gltfUrl = fd.get('asset');
+      if (type === 'image') rec.imageUrl = fd.get('asset');
+      if (type === 'builtin') rec.builtin = fd.get('asset') || 'edgeCube';
+      return rec;
+    }
+    function downloadBlob(data, filename, type='application/json'){
+      const blob = new Blob([data], {type});
+      const url = URL.createObjectURL(blob);
+      const a = document.getElementById('dljson'); a.href = url; a.download = filename;
+    }
+    document.getElementById('f').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const rec = buildRecord(fd);
+      if (/^ID-(1|2|3|4)$/.test(rec.id)) { alert('IDs ID-1..ID-4 are reserved for demos. Use another ID.'); return; }
+      await QRCode.toCanvas(document.getElementById('qr'), rec.id, {width:256, margin: 2});
+      document.getElementById('dlqr').href = document.getElementById('qr').toDataURL('image/png');
+      document.getElementById('dlqr').download = rec.id + '.png';
+      downloadBlob(JSON.stringify(rec, null, 2), rec.id + '.json');
+      document.getElementById('dljson').textContent = 'Download ' + rec.id + '.json';
+      alert('Generated! Put the JSON in /data then scan the QR.');
+    });
+  </script>
+</body>
+</html>
